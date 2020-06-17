@@ -126,7 +126,7 @@ Lemma b1_refl:
 Proof.
   intros a n.
   induction n as [| n' IH ].
-  - apply n2_b1_a.
+  - intros; simpl; reflexivity.
   - rewrite expand_Sn_Sb. apply IH.
 Qed.
 
