@@ -3,6 +3,8 @@ Require Import Omega.
 Require Import Coq.Arith.PeanoNat.
 
 
+(** * Definition *)
+
 Fixpoint hyperop (n a b : nat) : nat :=
   let fix hyperop_inner (b_inner : nat) : nat :=
      match n, b_inner with
@@ -18,6 +20,10 @@ Notation "a [ n ] b" := (hyperop n a b)
   (at level 50, left associativity).
 
 
+(** Tactic to handle [n] in four cases:
+  [n = 0, 1, 2, 3+]
+*)
+
 (* Helper tactic for destruct_hyp *)
 Ltac destruct_hyp_ lvl n :=
   match lvl with
@@ -32,7 +38,12 @@ Ltac destruct_hyp n := destruct_hyp_ 0 n.
 
 
 
-(* Basics *)
+(** * Basics *)
+
+(** ** Base Cases *)
+
+(** The following are the base cases for hyperoperation;
+  namely, when [n = 0] or [b = 0]. *)
 
 
 (* Base case: n = 0 *)
@@ -64,6 +75,12 @@ Proof.
 Qed.
 
 
+(** ** Recursive Step *)
+
+(** Expand the recursive part of the definition:
+  [a [n+1] b+1 = a n (a [n+1] b)
+*)
+
 (* Recursive step: a [n+1] b+1 = a n (a [n+1] b) *)
 Theorem expand_Sn_Sb:
   forall (n a b : nat),
@@ -82,6 +99,17 @@ Proof.
       * simpl. reflexivity.
 Qed.
 
+
+(** ** Equivalence with basic operations *)
+
+(** Hyper-operations generalize the relationship between
+addition, multiplication, and exponentiation. Specifically:
+
+- If [n = 1], the hyper-operation is equivalent to addition.
+- If [n = 2], the hyper-operation is equivalent to multiplication.
+- If [n = 3], the hyper-operation is equivalent to exponentiation.
+
+*)
 
 (* If n = 1, equivalent to addition *)
 Theorem hyp1_addition : forall a b,
