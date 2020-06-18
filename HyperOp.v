@@ -306,17 +306,28 @@ Proof.
       apply IH_n.
     + rewrite expand_Sn_Sb.
       apply (no_nats_between 0) in IH_b.
-
       apply gt_to_exists in IH_b. destruct IH_b as [x x_eq].
       rewrite x_eq. apply IH_n.
       omega.
 Qed.
 
 
-Lemma hyp_gt_b:
-  forall (n a b : nat), S (S a) [n] b > b.
+
+(* Lemma 3.2:
+Suppose a > 1, b > 1, n > 0. Then a[n]b > a.
+ *)
+Lemma hyp_gt_a_alt:
+  forall (n a b : nat), (n > 0) -> (a > 1) -> (b > 1) ->
+  a [n] b > a.
 Proof.
   intros n.
+  induction n as [| n' IH_n ].
+  - intros a b. omega.
+  - intros a b. intros Sn_gt_0 a_gt_1 b_gt_1.
+    make_pred_2 a_gt_1 as [a0 H_a].
+    make_pred_2 b_gt_1 as [b0 H_b].
+    rewrite H_a. rewrite H_b. apply hyp_gt_a.
+Qed.
 
 
 
