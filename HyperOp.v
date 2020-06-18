@@ -18,6 +18,20 @@ Notation "a [ n ] b" := (hyperop n a b)
   (at level 50, left associativity).
 
 
+(* Helper tactic for destruct_hyp *)
+Ltac destruct_hyp_ lvl n :=
+  match lvl with
+    | 0 => destruct n as [| n'' ]; try destruct_hyp_ 1 n''
+    | 1 => destruct n as [| n'  ]; try destruct_hyp_ 2 n'
+    | _ => destruct n
+   end.
+
+(* Analyze n in cases: n = 0, 1, 2, 3+ *)
+Ltac destruct_hyp n := destruct_hyp_ 0 n.
+
+
+
+
 (* Basics *)
 
 
@@ -204,6 +218,62 @@ Lemma gt_plus1_S_r:
 Proof.
   intros; omega.
 Qed.
+
+Theorem gt_to_exists_1:
+  forall (x : nat), x > 0 <-> exists j, x = S j.
+Proof.
+  intros x. split.
+  - intros x_gt_0.
+    destruct x as [| x' ].
+    + cut (~ (0 > 0)).
+      * intros contra. contradiction.
+      * omega.
+    + exists x'. reflexivity.
+  - intros exists_j.
+    destruct exists_j.
+    destruct x0. (*as [| x0' IH ].*)
+    + rewrite H; auto.
+    + rewrite H; omega.
+Qed.
+
+Theorem gt_to_exists_2:
+  forall (x : nat), x > 1 <-> exists j, x = S (S j).
+Proof.
+  intros x. split.
+  - intros x_gt_1.
+    destruct x as [| x' ].
+    + cut (~ (0 > 1)).
+      * intros contra. contradiction.
+      * omega.
+    + destruct x' as [| x'' ].
+      * cut (~ (1 > 1)).
+        intros contra. contradiction.
+        { omega. }
+      * exists x''. reflexivity.
+  - intros exists_j. destruct exists_j.
+    destruct x0.
+    + rewrite H; auto.
+    + rewrite H; omega.
+Qed.
+
+
+Ltac make_pred_1 H a b :=
+  apply gt_to_exists_1 in H as H';
+  destruct H' as [a b].
+
+Ltac make_pred_2 H a b :=
+  apply gt_to_exists_2 in H as H';
+  destruct H' as [a b].
+
+
+Tactic Notation
+  "make_pred_1" ident(H) "as" "[" ident(a) ident(b) "]" :=
+  make_pred_1 H a b.
+
+Tactic Notation
+  "make_pred_2" ident(H) "as" "[" ident(a) ident(b) "]" :=
+  make_pred_2 H a b.
+
 
 Lemma gt_to_exists:
   forall (x y : nat), x > (y+1) -> exists j, x = S (S j).
