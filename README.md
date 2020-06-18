@@ -1,6 +1,11 @@
 # Hyper-Operations in Coq
 
-This project implements lemmas and theorems from "The Fundamental Theorems of Hyper-Operations" (see below) in Coq.
+This project implements lemmas and theorems on hyper-operations in Coq.
+
+
+# CoqDoc Library
+
+A CoqDoc generated file can be found [here](https://vlagrassa.github.io/hyper-operations-coq/HyperOp.html).
 
 
 # Source
