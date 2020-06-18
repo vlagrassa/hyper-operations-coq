@@ -279,9 +279,17 @@ Lemma gt_to_exists:
   forall (x y : nat), x > (y+1) -> exists j, x = S (S j).
 Proof.
   intros x y H.
-(*   exists y. *)
-  apply gt_plus1_S_r in H.
-Admitted.
+  assert (O_Sn: forall n, n + 1 = S n). { intros; omega. }
+  rewrite O_Sn in H.
+  induction y as [| y' IH_y ].
+  - apply gt_to_exists_2. assumption.
+  - apply IH_y. omega.
+Qed.
+
+
+
+
+
 
 (* Lemma 3.2:
 Suppose a > 1, b > 1, n > 0. Then a[n]b > a.
