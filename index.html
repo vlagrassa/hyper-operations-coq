@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title></title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library HyperOp</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="var">Coq.Program.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Omega</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Arith.PeanoNat</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab1"></a><h1 class="section">Definition</h1>
+
+<div class="paragraph"> </div>
+
+ Hyperoperations generalize addition to multiplication
+to exponentiation. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">hyperop</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <span class="id" title="var">hyperop_inner</span> (<span class="id" title="var">b_inner</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span>, <span class="id" title="var">b_inner</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">O</span>,    <span class="id" title="var">_</span>    =&gt; <span class="id" title="var">S</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 1,    <span class="id" title="var">O</span>    =&gt; <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 2,    <span class="id" title="var">O</span>    =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span>,    <span class="id" title="var">O</span>    =&gt; 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span>, <span class="id" title="var">S</span> <span class="id" title="var">b'</span> =&gt; <span class="id" title="var">hyperop</span> <span class="id" title="var">n'</span> <span class="id" title="var">a</span> (<span class="id" title="var">hyperop_inner</span> <span class="id" title="var">b'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">in</span> <span class="id" title="var">hyperop_inner</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;a [ n ] b" := (<span class="id" title="var">hyperop</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab2"></a><h1 class="section">General Background</h1>
+
+<div class="paragraph"> </div>
+
+ The following are useful throughout the file.
+I define them here so as not to break up the flow of
+the document later on. 
+<div class="paragraph"> </div>
+
+<a name="lab3"></a><h2 class="section">Lemmas</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">leq_0_nat</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span>:<span class="id" title="var">nat</span>), 0 &lt;= <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pow_1_n</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>), 1 ^ <span class="id" title="var">n</span> = 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">gt_to_exists_1</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">x</span> &gt; 0 &lt;-&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">j</span>, <span class="id" title="var">x</span> = <span class="id" title="var">S</span> <span class="id" title="var">j</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">gt_to_exists_2</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">x</span> &gt; 1 &lt;-&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">j</span>, <span class="id" title="var">x</span> = <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">j</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">gt_to_exists</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">x</span> &gt; (<span class="id" title="var">y</span>+1) -&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">j</span>, <span class="id" title="var">x</span> = <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">j</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab4"></a><h2 class="section">Tactics</h2>
+
+<div class="paragraph"> </div>
+
+ Handle <span class="inlinecode"><span class="id" title="var">n</span></span> in four cases:
+  <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0,</span> <span class="inlinecode">1,</span> <span class="inlinecode">2,</span> <span class="inlinecode">3+</span>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">destruct_hyp_</span> <span class="id" title="var">lvl</span> <span class="id" title="var">n</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">lvl</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">n''</span> ]; <span class="id" title="tactic">try</span> <span class="id" title="var">destruct_hyp_</span> 1 <span class="id" title="var">n''</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 1 =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">n'</span>  ]; <span class="id" title="tactic">try</span> <span class="id" title="var">destruct_hyp_</span> 2 <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">destruct_hyp</span> <span class="id" title="var">n</span> := <span class="id" title="var">destruct_hyp_</span> 0 <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">&gt;</span> <span class="inlinecode">0</span>, introduce a variable <span class="inlinecode"><span class="id" title="var">a</span></span> such that
+<span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span>, along with a proof <span class="inlinecode"><span class="id" title="var">b</span></span> of this fact. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_pred_1</span> <span class="id" title="var">H</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gt_to_exists_1</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span><br/>
+&nbsp;&nbsp;"make_pred_1" <span class="id" title="var">ident</span>(<span class="id" title="var">H</span>) "as" "[" <span class="id" title="var">ident</span>(<span class="id" title="var">a</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">b</span>) "]" :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">make_pred_1</span> <span class="id" title="var">H</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">&gt;</span> <span class="inlinecode">1</span>, introduce a variable <span class="inlinecode"><span class="id" title="var">a</span></span> such that
+<span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">S</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">a</span>)</span>, along with a proof <span class="inlinecode"><span class="id" title="var">b</span></span> of this fact. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_pred_2</span> <span class="id" title="var">H</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gt_to_exists_2</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span><br/>
+&nbsp;&nbsp;"make_pred_2" <span class="id" title="var">ident</span>(<span class="id" title="var">H</span>) "as" "[" <span class="id" title="var">ident</span>(<span class="id" title="var">a</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">b</span>) "]" :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">make_pred_2</span> <span class="id" title="var">H</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab5"></a><h1 class="section">Basics</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab6"></a><h2 class="section">Base Cases</h2>
+
+<div class="paragraph"> </div>
+
+ The following are the base cases for hyperoperation;
+  namely, when <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span> or <span class="inlinecode"><span class="id" title="var">b</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">hyp0_successor</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [0] <span class="id" title="var">b</span> = <span class="id" title="var">S</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">base_1_0</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [1] 0 = <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">base_2_0</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [2] 0 = 0.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">base_3p_0</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [<span class="id" title="var">S</span> (<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>))] 0 = 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab7"></a><h2 class="section">Recursive Step</h2>
+
+<div class="paragraph"> </div>
+
+ Expand the recursive part of the definition:
+  <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">[<span class="id" title="var">n</span>+1]</span> <span class="inlinecode"><span class="id" title="var">b</span>+1</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">a</span></span> <span class="inlinecode">[<span class="id" title="var">n</span>+1]</span> <span class="inlinecode"><span class="id" title="var">b</span>)</span>
+<span class="inlinecode"></span>
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">expand_Sn_Sb</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>),<br/>
+&nbsp;&nbsp;<span class="id" title="var">a</span> [<span class="id" title="var">S</span> <span class="id" title="var">n</span>] <span class="id" title="var">S</span> <span class="id" title="var">b</span> = <span class="id" title="var">a</span> [<span class="id" title="var">n</span>] (<span class="id" title="var">a</span> [<span class="id" title="var">S</span> <span class="id" title="var">n</span>] <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab8"></a><h2 class="section">Equivalence with basic operations</h2>
+
+<div class="paragraph"> </div>
+
+ Hyper-operations generalize the relationship between
+addition, multiplication, and exponentiation. Specifically:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> If <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">1</span>, the hyper-operation is equivalent to addition.
+
+</li>
+<li> If <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">2</span>, the hyper-operation is equivalent to multiplication.
+
+</li>
+<li> If <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">3</span>, the hyper-operation is equivalent to exponentiation.
+
+</li>
+</ul>
+
+<div class="paragraph"> </div>
+
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">hyp1_addition</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">a</span> [1] <span class="id" title="var">b</span> = <span class="id" title="var">a</span> + <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">hyp2_multiplication</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">a</span> [2] <span class="id" title="var">b</span> = <span class="id" title="var">a</span> * <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">hyp3_exponentiation</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">a</span> [3] <span class="id" title="var">b</span> = <span class="id" title="var">a</span> ^ <span class="id" title="var">b</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">4</span>, some sources use the term "tetration".
+Above that point, though, the operations aren't really
+individually named. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;a ^^ b" := (<span class="id" title="var">hyperop</span> 4 <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">hyp4_tetration</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">a</span> [4] <span class="id" title="var">b</span> = <span class="id" title="var">a</span> ^^ <span class="id" title="var">b</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab9"></a><h1 class="section">Chapter 2: Some Basic Equalities</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab10"></a><h3 class="section">Lemma 2.1</h3>
+
+Suppose <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">&gt;</span> <span class="inlinecode">1</span>. Then <span class="inlinecode"><span class="id" title="var">a</span>[<span class="id" title="var">n</span>]1</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">a</span></span>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">b1_refl</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)] 1 = <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">b1_n_m</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">a</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> [<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)] 1 = <span class="id" title="var">a</span> [<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">m</span>)] 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab11"></a><h3 class="section">Lemma 2.2</h3>
+
+Suppose <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">&gt;</span> <span class="inlinecode">2</span>. Then <span class="inlinecode">1[<span class="id" title="var">n</span>]<span class="id" title="var">b</span></span> <span class="inlinecode">=</span> <span class="inlinecode">1</span>.
+ 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">a1_eq_1</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), 1 [<span class="id" title="var">S</span> (<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>))] <span class="id" title="var">b</span> = 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab12"></a><h1 class="section">Chapter 3: Some Basic Inequalities</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab13"></a><h3 class="section">Lemma 3.1</h3>
+
+  Suppose c &gt; b &gt; a. Then c &gt; a + 1.
+ 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">no_nats_between</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">c</span> &gt; <span class="id" title="var">b</span> -&gt; <span class="id" title="var">b</span> &gt; <span class="id" title="var">a</span> -&gt; <span class="id" title="var">c</span> &gt; <span class="id" title="var">a</span>+1.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">gt_implies_ge</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">a</span> &gt; <span class="id" title="var">b</span> -&gt; <span class="id" title="var">a</span> &gt;= <span class="id" title="var">S</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">gt_trans_ge</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">c</span> &gt; <span class="id" title="var">b</span> -&gt; <span class="id" title="var">b</span> &gt; <span class="id" title="var">a</span> -&gt; <span class="id" title="var">c</span> &gt;= <span class="id" title="var">a</span>+1.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">gt_plus1_S_r</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">x</span> &gt; <span class="id" title="var">y</span>+1 &lt;-&gt; <span class="id" title="var">x</span> &gt; <span class="id" title="var">S</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab14"></a><h2 class="section">Section 3.1: A hyper-product is larger than its operands.</h2>
+
+ 
+<div class="paragraph"> </div>
+
+<a name="lab15"></a><h3 class="section">Lemma 3.2:</h3>
+
+Suppose a &gt; 1, b &gt; 1, n &gt; 0. Then a<span class="inlinecode"><span class="id" title="var">n</span></span>b &gt; a.
+ 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hyp_gt_a</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), (<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>)) [<span class="id" title="var">S</span> <span class="id" title="var">n</span>] (<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">b</span>)) &gt; (<span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hyp_gt_a_alt</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), (<span class="id" title="var">n</span> &gt; 0) -&gt; (<span class="id" title="var">a</span> &gt; 1) -&gt; (<span class="id" title="var">b</span> &gt; 1) -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">a</span> [<span class="id" title="var">n</span>] <span class="id" title="var">b</span> &gt; <span class="id" title="var">a</span>.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hyp_gt_b</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">S</span> <span class="id" title="var">b</span> &gt; <span class="id" title="var">S</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">hyp_gt_b_alt</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), (<span class="id" title="var">b</span> &gt; 1) -&gt; <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">b</span> &gt; <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">inc_b_inc_hyp</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">S</span> <span class="id" title="var">b</span> &gt; <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">b</span>.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Corollary</span> <span class="id" title="var">snd_arg_eq</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">d</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">b</span> = <span class="id" title="var">S</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) [<span class="id" title="var">n</span>] <span class="id" title="var">d</span> -&gt; <span class="id" title="var">b</span> = <span class="id" title="var">d</span>.<br/>
+
+<br/>
+
+<br/>
+</div>
+<table>
+<tr>
+<td>Global Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td><a href="index.html#global_H">H</a></td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+<tr>
+<td>Library Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td><a href="index.html#library_H">H</a></td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+</table>
+<hr/>
+<h1>Global Index</h1>
+<a name="global_H"></a><h2>H </h2>
+<a href="HyperOp.html">HyperOp</a> [library]<br/>
+<br/><br/><hr/>
+<h1>Library Index</h1>
+<a name="library_H"></a><h2>H </h2>
+<a href="HyperOp.html">HyperOp</a> <br/>
+<br/><br/><hr/><table>
+<tr>
+<td>Global Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td><a href="index.html#global_H">H</a></td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+<tr>
+<td>Library Index</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td><a href="index.html#library_H">H</a></td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>_</td>
+<td>other</td>
+<td>(1 entry)</td>
+</tr>
+</table>
+<hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
